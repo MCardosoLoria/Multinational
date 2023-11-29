@@ -11,10 +11,8 @@ import boto3
 
 class DatabaseConnector:
 
-    def _init_ (self, engine, db_creds, inspector):
-        self.engine = engine
+    def __init__(self, db_creds):
         self.db_creds = db_creds
-        self.inspector = inspector
 
     # Reads the credentials for the database from the YAML file.
 
@@ -26,38 +24,41 @@ class DatabaseConnector:
     # Creates and initiates engine connection to AWS.
 
     def init_db_engine(self):
-        self.db_creds = DatabaseConnector.read_db_creds()
-        self.engine = create_engine(f"{self.db_creds['DATABASE_TYPE']}+{self.db_creds['DBAPI']}://{self.db_creds['RDS_USER']}:{self.db_creds['RDS_PASSWORD']}@{self.db_creds['RDS_HOST']}:{self.db_creds['RDS_PORT']}/{self.db_creds['RDS_DATABASE']}")
-        self.engine.execution_options(isolation_level='AUTOCOMMIT').connect()
-        self.engine = self.engine.connect()
-        return self.engine
+        self.db_creds = self.read_db_creds()
+        engine = create_engine(f"{self.db_creds['DATABASE_TYPE']}+{self.db_creds['DBAPI']}://{self.db_creds['RDS_USER']}:{self.db_creds['RDS_PASSWORD']}@{self.db_creds['RDS_HOST']}:{self.db_creds['RDS_PORT']}/{self.db_creds['RDS_DATABASE']}")
+        engine.execution_options(isolation_level='AUTOCOMMIT').connect()
+        engine = engine.connect()
+        return engine
     
     # Lists the tables extracted from the connection to the AWS server.
 
     def list_db_tables(self):
-        self.engine = DatabaseConnector.init_db_engine()
-        self.inspector = inspect(self.engine)
-        return self.inspector.get_table_names()
+        engine = self.init_db_engine()
+        inspector = inspect(engine)
+        return inspector.get_table_names()
     
     # Uploads the tables extracted to PGAdmin4.
 
     def upload_to_db(self, table_name):
-        self.engine = DatabaseConnector.init_db_engine()
+        engine = self.init_db_engine()
         df = DataCleaning.clean_user_data(table_name)
-        df.to_sql(name = "dim_users", con = self.engine)
+        df.to_sql(name = "dim_users", con = engine)
 
 class DataExtractor:
 
+    def __init__(self):
+        self = self
+
     # Reads SQL table from AWS connection and returns a Pandas DataFrame.
 
-    def read_rds_table(table_name):
+    def read_rds_table(self, table_name):
         engine = DatabaseConnector.init_db_engine()
         df = pd.read_sql_table(table_name, engine)
         return df
     
     # Reads PDF from link and returns a Pandas DataFrame.
         
-    def retrieve_pdf_data(path):
+    def retrieve_pdf_data(self, path):
         df = tabula.read_pdf(path, pages = "all")
         return df
     
@@ -65,9 +66,12 @@ class DataExtractor:
     
 class DataCleaning:
 
+    def __init__(self):
+        self = self
+
     # Removes NULL values from SQL table and returns a Pandas Dataframe.
 
-    def clean_user_data(table_name):
+    def clean_user_data(self, table_name):
         df = DataExtractor.read_rds_table(table_name)
         df.to_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
@@ -76,7 +80,7 @@ class DataCleaning:
     
     # Removes NULL values from PDF and returns a Pandas Dataframe.
         
-    def clean_card_data(path):
+    def clean_card_data(self, path):
         df = DataExtractor.retrieve_pdf_data(path)
         for i in df:
             i.to_csv(r"Multinational Retail Data\sales_data\card_details.csv")
@@ -85,6 +89,8 @@ class DataCleaning:
         return read_df
     
 
-DatabaseConnector.upload_to_db("legacy_users")
+connector = DatabaseConnector(r'Multinational Retail Data\sales_data\db_creds.yaml')
+
+connector.upload_to_db("legacy_users")
 
 
