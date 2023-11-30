@@ -23,5 +23,5 @@ class DataExtractor:
     
     # Extracts table from AWS and returns a Pandas DataFrame.
     
-
+DataExtractor.read_rds_table("legacy_users")
 

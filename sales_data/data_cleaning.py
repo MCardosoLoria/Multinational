@@ -27,7 +27,7 @@ class DataCleaning:
         return read_df
     
 
-
+DataCleaning.clean_user_data("legacy_users")
 
 
 
