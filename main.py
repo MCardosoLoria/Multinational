@@ -10,6 +10,8 @@ import tabula
 import jpype
 import boto3
 import requests
+import json
+import ast
 
 DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
@@ -46,12 +48,12 @@ class DatabaseConnector:
     
     # Uploads the tables extracted to PGAdmin4.
 
-    def upload_to_db(table_name):
+    def upload_to_db():
         engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
         engine.execution_options(isolation_level='AUTOCOMMIT').connect()
         engine = engine.connect()
-        df = DataCleaning.clean_card_data(table_name)
-        df.to_sql(name = "dim_card_details", con = engine)
+        df = DataCleaning.clean_store_data()
+        df.to_sql(name = "dim_store_details", con = engine)
 
 class DataExtractor:
 
@@ -79,15 +81,18 @@ class DataExtractor:
     
     # Extracts stores data from AWS server
 
-    def retrieve_stores_data(url):
+    def retrieve_stores_data():
+        stores_list = []
         store_number = 1
         headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
         while store_number < 451:
-            for store in url:
-                response = requests.get(url, headers=headers)
-                df = response.json()
-                store_number += 1
-        return df
+            url = f"https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{store_number}"
+            response = requests.get(url, headers=headers)
+            data = response.text
+            df = json.loads(data)
+            stores_list.append(df)
+            store_number += 1
+        return stores_list
 
     # Extracts table from AWS and returns a Pandas DataFrame.
     
@@ -111,10 +116,19 @@ class DataCleaning:
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         read_df = read_df.dropna()
         return read_df
+    
+    # Removes NULL values from pdf and returns a Pandas Dataframe.
+    
+    def clean_store_data():
+        df = DataExtractor.retrieve_stores_data()
+        df = ast.literal_eval(df)
+        df = pd.DataFrame(df)
+        df.to_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv", index=False, header=True)
+        read_df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv")
+        read_df = read_df.dropna()
+        return read_df
+    
 
-
-Extraction = DataExtractor
-
-print(Extraction.retrieve_stores_data("https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{store_number}"))
+DatabaseConnector.upload_to_db()
 
 
