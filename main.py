@@ -3,28 +3,35 @@ import uvicorn
 import yaml
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
+import numpy as np
 import pandas as pd
 import psycopg2
 import tabula
 import jpype
 import boto3
+import requests
 
-class DatabaseConnectorCleaningExtraction:
+DATABASE_TYPE = 'postgresql'
+DBAPI = 'psycopg2'
+HOST = 'localhost'
+USER = 'postgres'
+PASSWORD = 'Santosfc1234'
+DATABASE = 'sales_data'
+PORT = 5432
 
-    def __init__(self, engine):
-        self.engine = engine
+class DatabaseConnector:
 
     # Reads the credentials for the database from the YAML file.
 
-    def read_db_creds(self):
+    def read_db_creds():
         with open(r'Multinational Retail Data\sales_data\db_creds.yaml', 'r') as file:
             db_creds = yaml.safe_load(file)
             return db_creds
         
     # Creates and initiates engine connection to AWS.
 
-    def init_db_engine(self):
-        db_creds = self.read_db_creds()
+    def init_db_engine():
+        db_creds = DatabaseConnector.read_db_creds()
         engine = create_engine(f"{db_creds['DATABASE_TYPE']}+{db_creds['DBAPI']}://{db_creds['RDS_USER']}:{db_creds['RDS_PASSWORD']}@{db_creds['RDS_HOST']}:{db_creds['RDS_PORT']}/{db_creds['RDS_DATABASE']}")
         engine.execution_options(isolation_level='AUTOCOMMIT').connect()
         engine = engine.connect()
@@ -32,37 +39,64 @@ class DatabaseConnectorCleaningExtraction:
     
     # Lists the tables extracted from the connection to the AWS server.
 
-    def list_db_tables(self):
-        engine = self.init_db_engine()
+    def list_db_tables():
+        engine = DatabaseConnector.init_db_engine()
         inspector = inspect(engine)
         return inspector.get_table_names()
     
     # Uploads the tables extracted to PGAdmin4.
 
-    def upload_to_db(self, table_name):
-        engine = self.init_db_engine()
-        df = self.clean_user_data(table_name)
-        df.to_sql(name = "dim_users", con = engine)
+    def upload_to_db(table_name):
+        engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+        engine.execution_options(isolation_level='AUTOCOMMIT').connect()
+        engine = engine.connect()
+        df = DataCleaning.clean_card_data(table_name)
+        df.to_sql(name = "dim_card_details", con = engine)
+
+class DataExtractor:
 
     # Reads SQL table from AWS connection and returns a Pandas DataFrame.
 
-    def read_rds_table(self, table_name):
-        engine = self.init_db_engine()
+    def read_rds_table(table_name):
+        engine = DatabaseConnector.init_db_engine()
         df = pd.read_sql_table(table_name, engine)
         return df
     
     # Reads PDF from link and returns a Pandas DataFrame.
         
-    def retrieve_pdf_data(self, path):
-        df = tabula.read_pdf(path, pages = "all")
+    def retrieve_pdf_data(table_name):
+        df = tabula.read_pdf(table_name, pages = "all")
         return df
     
+    # Lists number of stores in the AWS server
+
+    def list_number_of_stores():
+        url = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores"
+        headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
+        response = requests.get(url, headers=headers)
+        number_of_stores = response.json()
+        return number_of_stores
+    
+    # Extracts stores data from AWS server
+
+    def retrieve_stores_data(url):
+        store_number = 1
+        headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
+        while store_number < 451:
+            for store in url:
+                response = requests.get(url, headers=headers)
+                df = response.json()
+                store_number += 1
+        return df
+
     # Extracts table from AWS and returns a Pandas DataFrame.
+    
+class DataCleaning:
 
     # Removes NULL values from SQL table and returns a Pandas Dataframe.
 
-    def clean_user_data(self, table_name):
-        df = self.read_rds_table(table_name)
+    def clean_user_data(table_name):
+        df = DataExtractor.read_rds_table(table_name)
         df.to_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
         read_df = read_df.dropna()
@@ -70,15 +104,17 @@ class DatabaseConnectorCleaningExtraction:
     
     # Removes NULL values from PDF and returns a Pandas Dataframe.
         
-    def clean_card_data(self, path):
-        df = self.retrieve_pdf_data(path)
+    def clean_card_data(table_name):
+        df = DataExtractor.retrieve_pdf_data(table_name)
         for i in df:
             i.to_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         read_df = read_df.dropna()
         return read_df
-    
 
-DatabaseConnectorCleaningExtraction.clean_user_data("legacy_users")
+
+Extraction = DataExtractor
+
+print(Extraction.retrieve_stores_data("https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{store_number}"))
 
 
