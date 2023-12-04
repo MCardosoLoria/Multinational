@@ -170,13 +170,10 @@ class DataCleaning:
     def clean_products_data():
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\Multinational_products.csv")
         read_df = read_df.dropna()
-        read_df['weight_split'] = read_df['weight'].apply(lambda x: re.split("(\d+)\s*(\w+)", x))
-        if len(read_df['weight_split']) > 4:
-            read_df['weight_int'] = read_df['weight_split'].apply(lambda x: x[1] * x[4])
-            read_df['weight_unit'] = read_df['weight_split'].apply(lambda x: x[5])
-        else:
-            read_df['weight_int'] = read_df['weight_split'].apply(lambda x: x[0] + x[1])
-            read_df['weight_unit'] = read_df['weight_split'].apply(lambda x: x[2])
+        read_df['weight'] = read_df['weight'].astype(str)
+        def find_num():
+            [int(num) for num in re.findall(r'\d+', read_df['weight']) if num.isdigit()]
+        read_df['weight_split'] = read_df['weight'].apply(find_num)
         read_df.to_csv(r"Multinational Retail Data\product_data_Cleaned.csv", index = False, header = True)
         return read_df
     
@@ -186,3 +183,4 @@ class DataCleaning:
         return read_df
 
 print(DataCleaning.clean_products_data())
+
