@@ -173,7 +173,7 @@ class DataCleaning:
         read_df['weight'] = read_df['weight'].astype(str)
         def find_num():
             [int(num) for num in re.findall(r'\d+', read_df['weight']) if num.isdigit()]
-        read_df['weight_split'] = read_df['weight'].apply(find_num)
+        read_df['weight_split'] = read_df['weight'].apply(find_num())
         read_df.to_csv(r"Multinational Retail Data\product_data_Cleaned.csv", index = False, header = True)
         return read_df
     
