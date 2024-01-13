@@ -69,9 +69,9 @@ class DatabaseConnector:
         engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
         engine.execution_options(isolation_level='AUTOCOMMIT').connect()
         engine = engine.connect()
-        with open (r"Multinational Retail Data\sales_data\Multination_stores_data.csv", "r"):
-            df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv", sep='|', encoding='latin-1')
-        df.to_sql(name = "dim_store_details", con = engine, if_exists = 'replace', index = False)
+        with open (r"Multinational Retail Data\sales_data\Multination_legacy_users.csv", "r"):
+            df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
+        df.to_sql(name = "dim_users", con = engine, if_exists = 'replace', index = False)
 
 class DataExtractor:
 
@@ -130,7 +130,7 @@ class DataExtractor:
 
 class DataCleaning:
 
-    # Removes NULL values from users table and returns a Pandas Dataframe.
+    # Removes NULL and incorrect values from users table and returns a Pandas Dataframe.
 
     def clean_user_data(table_name):
         df = DataExtractor.read_rds_table(table_name)
@@ -138,7 +138,7 @@ class DataCleaning:
         df.to_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
         return df
     
-    # Removes NULL values from PDF and returns a Pandas Dataframe.
+    # Removes NULL and incorrect values from PDF and returns a Pandas Dataframe.
         
     def clean_card_data(table_name):
         df = DataExtractor.retrieve_pdf_data(table_name)
@@ -146,22 +146,19 @@ class DataCleaning:
             card_data.to_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         read_df = read_df.dropna()
+        read_df.to_csv(r"Multinational Retail Data\sales_data\card_details.csv")
         return read_df
     
-    # Removes NULL values from pdf and returns a Pandas Dataframe.
+    # Removes NULL and incorrect values from stores pdf and returns a Pandas Dataframe.
     
     def clean_store_data():
         df = DataExtractor.retrieve_stores_data()
-        df = ast.literal_eval(df)
         df = pd.DataFrame(df)
-        df = pd.concat(df, ignore_index = True)
-        df.to_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv")
-        df = pd.read_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv")
         df = df.loc[df['store_type'].isin(['Local', 'Super Store', 'Mall Kiosk', 'Outlet'])]
         df.to_csv(r"Multinational Retail Data\sales_data\Multination_stores_data.csv")
         return df
     
-    # Removes NULL values from orders table and returns a Pandas Dataframe.
+    # Removes NULL and incorrect values from orders table and returns a Pandas Dataframe.
     
     def clean_orders_data(table_name):
         df = DataExtractor.read_rds_table(table_name)
@@ -202,7 +199,7 @@ class DataCleaning:
         read_df = pd.read_csv(r"Multinational Retail Data\sales_data\Multinational_products.csv")
         read_df = read_df.dropna()
 
-        # Drops incorrect rows - find them by funnelling through categorical columns with only a few variations
+        # Drops incorrect rows
         read_df = read_df.loc[read_df['removed'].isin(['Still_avaliable', 'Removed'])]
         
         # Creates Unit column
@@ -234,4 +231,4 @@ class DataCleaning:
         return read_df
 
 
-DataCleaning.clean_store_data()
+DatabaseConnector.upload_to_db()
