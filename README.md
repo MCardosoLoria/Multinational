@@ -1,4 +1,4 @@
-# Azure-Database-Migration
+# Multinational-Retail-Data-Centralisation
 
 ## Table of Contents
 Milestone 2 - Extracting and Cleaning Data from Data Sources <br>
