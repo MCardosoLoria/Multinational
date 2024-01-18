@@ -101,7 +101,7 @@ Here, in the Database Schema.sql, the queries convert data types to their correc
 For example:
 
       ALTER TABLE dim_users
-ALTER COLUMN user_uuid TYPE UUID USING ("user_uuid"::TEXT::UUID);
+      ALTER COLUMN user_uuid TYPE UUID USING ("user_uuid"::TEXT::UUID);
 
 ### Querying the Data <br>
 
@@ -110,12 +110,12 @@ Here, in the Database Queries.sql, the queries return specific results required 
 For example:
 
       SELECT
-    country_code,
-    COUNT(country_code)
-FROM 
-    dim_store_details
-GROUP BY
-    country_code
+        country_code,
+        COUNT(country_code)
+      FROM 
+          dim_store_details
+      GROUP BY
+          country_code
 
 This code returns how many stores there are in which countries.
 
