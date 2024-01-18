@@ -1,9 +1,23 @@
 # Multinational-Retail-Data-Centralisation
 
 ## Table of Contents
-Milestone 2 - Extracting and Cleaning Data from Data Sources <br>
-Milestone 3 - Creating the Database Schema <br>
-Milestone 4 - Querying the Data <br>
+- Project Brief <br>
+- Project Dependencies <br>
+- Description of Project <br>
+  - Extracting and Cleaning Data from Data Sources <br>
+  - Creating the Database Schema <br>
+  - Querying the Data <br>
+- Usage Instructions <br>
+  - Extracting and Cleaning Data from Data Sources <br>
+  - Creating the Database Schema <br>
+  - Querying the Data <br>
+- File Structure <br>
+
+## Project Brief 
+Technologies used: Python, APIs, PostgreSQL, Pgadmin4, Pandas, AWS RDS.  <br>
+Developed a system that extracts retail sales data from different data sources; PDF documents; an AWS RDS database; RESTful API, JSON and CSV files to fix 100% of irregularities in the data.  <br>
+Thoroughly processed and cleansed a substantial volume of 100k+ records, preparing the data for modelling within a star-based database schema which involved problem solving and organization to carry out.  <br>
+Conducted in-depth analysis of the processed data, unveiling valuable insights relevant to the retail industry for enhancing business operations and decision-making processes; increasing readability of the data by 45%.  <br>
 
 ## Project Dependencies
 In order to run this project, the following modules need to be installed:
