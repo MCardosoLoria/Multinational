@@ -3,6 +3,7 @@
 ## Table of Contents
 - Project Brief <br>
 - Project Dependencies <br>
+- Tools Used
 - Description of Project <br>
   - Extracting and Cleaning Data from Data Sources <br>
   - Creating the Database Schema <br>
@@ -14,10 +15,9 @@
 - File Structure <br>
 
 ## Project Brief 
-Technologies used: Python, APIs, PostgreSQL, Pgadmin4, Pandas, AWS RDS.  <br>
-Developed a system that extracts retail sales data from different data sources; PDF documents; an AWS RDS database; RESTful API, JSON and CSV files to fix 100% of irregularities in the data.  <br>
-Thoroughly processed and cleansed a substantial volume of 100k+ records, preparing the data for modelling within a star-based database schema which involved problem solving and organization to carry out.  <br>
-Conducted in-depth analysis of the processed data, unveiling valuable insights relevant to the retail industry for enhancing business operations and decision-making processes; increasing readability of the data by 45%.  <br>
+This project developed a system that extracts retail sales data from different data sources; PDF documents; an AWS RDS database; RESTful API, JSON and CSV files to fix 100% of irregularities in the data.  <br>
+It also thoroughly processed and cleansed a substantial volume of 100k+ records, preparing the data for modelling within a star-based database schema which involved problem solving and organization to carry out.  <br>
+Further to this, it conducted an in-depth analysis of the processed data, unveiling valuable insights relevant to the retail industry for enhancing business operations and decision-making processes; increasing readability of the data by 45%.  <br>
 
 ## Project Dependencies
 In order to run this project, the following modules need to be installed:
@@ -29,10 +29,18 @@ In order to run this project, the following modules need to be installed:
 - boto3
 - requests
 
+## Tools Used
+- [Python](https://www.python.org/) - Python is a computer programming language often used to build websites and software, automate tasks, and conduct data analysis.
+- [APIs](https://www.redhat.com/en/topics/api/what-are-application-programming-interfaces) - APIs are mechanisms that enable two software components to communicate with each other using a set of definitions and protocols.
+- [PostgreSQL](https://www.postgresql.org/) - PostgreSQL is an advanced, enterprise-class open-source relational database that supports both SQL (relational) and JSON (non-relational) querying.
+- [Pgadmin4](https://www.pgadmin.org/) - pgAdmin is the leading Open Source management tool for Postgres, the world's most advanced Open Source database.
+- [Pandas](https://pandas.pydata.org/) - Pandas is a Python library used for working with data sets. It has functions for analyzing, cleaning, exploring, and manipulating data. 
+- [AWS RDS](https://aws.amazon.com/rds/) - Amazon Relational Database Service (Amazon RDS) is a web service that makes it easier to set up, operate, and scale a relational database in the AWS Cloud. 
+
 ## Description of the Project
 ### Extracting and Cleaning Data from Data Sources  <br>
 
-Here, in the DatabaseConnector.py, the read_db_creds method is used to load the credentials to be used when connecting to the engine that will provide the names of the tables. <br>
+Here, in the [DatabaseConnector.py](DatabaseConnector.py), the read_db_creds method is used to load the credentials to be used when connecting to the engine that will provide the names of the tables. <br>
 The init_db_engine method is used to input the database credentials into the engine and connect to it securely.  <br>
 The list_db_tables method is used to gain acces to the names of the tables which will be extracted, cleaned and uploaded to PGAdmin4.  <br>
 The upload_to_db method is used to upload the selected table onto the database by providing the .csv file where the table was cleaned and written onto.  <br>
