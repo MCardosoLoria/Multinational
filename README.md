@@ -40,24 +40,24 @@ In order to run this project, the following modules need to be installed:
 ## Description of the Project
 ### Extracting and Cleaning Data from Data Sources  <br>
 
-Here, in the [DatabaseConnector.py](DatabaseConnector.py), the read_db_creds method is used to load the credentials to be used when connecting to the engine that will provide the names of the tables. <br>
-The init_db_engine method is used to input the database credentials into the engine and connect to it securely.  <br>
-The list_db_tables method is used to gain acces to the names of the tables which will be extracted, cleaned and uploaded to PGAdmin4.  <br>
-The upload_to_db method is used to upload the selected table onto the database by providing the .csv file where the table was cleaned and written onto.  <br>
+Here, in the [DatabaseConnector.py](DatabaseConnector.py), the read_db_creds() method is used to load the credentials to be used when connecting to the engine that will provide the names of the tables. <br>
+The init_db_engine() method is used to input the database credentials into the engine and connect to it securely.  <br>
+The list_db_tables() method is used to gain acces to the names of the tables which will be extracted, cleaned and uploaded to PGAdmin4.  <br>
+The upload_to_db() method is used to upload the selected table onto the database by providing the .csv file where the table was cleaned and written onto.  <br>
 
-Next, in the DataExtractor.py, the read_rds_table method is used to extract and return the dataframes for legacy_users and orders_table.  <br>
-The retrieve_pdf_data method is used to extract and return the dataframes for card_details. <br>
-The list_number_of_stores is used to extract and return the number of stores in the given link so that the next method can used that to compile and extract the correct number of stores data. <br>
-The retrieve_stores_data is used to extract and return the dataframes for stores_data. <br>
-The extract_from_s3_products is used to extract and return the dataframes for products_list. <br>
-The extract_from_json_dates is used to extract and return the dataframes for date_times. <br>
+Next, in the [DataExtractor.py](DataExtractor.py), the read_rds_table() method is used to extract and return the dataframes for legacy_users and orders_table.  <br>
+The retrieve_pdf_data() method is used to extract and return the dataframes for card_details. <br>
+The list_number_of_stores() is used to extract and return the number of stores in the given link so that the next method can used that to compile and extract the correct number of stores data. <br>
+The retrieve_stores_data() is used to extract and return the dataframes for stores_data. <br>
+The extract_from_s3_products() is used to extract and return the dataframes for products_list. <br>
+The extract_from_json_dates() is used to extract and return the dataframes for date_times. <br>
 
-Finally, in the DataCleaning.py, the clean_user_data method is used to remove NULL and incorrect values from users table and to return a Pandas Dataframe.  <br>
-The clean_card_data method is used to remove NULL and incorrect values from card_details table and to return a Pandas Dataframe. <br>
-The clean_store_data method is used to remove NULL and incorrect values from stores_data table and to return a Pandas Dataframe.  <br>
-The clean_orders_data method is used to remove NULL and incorrect values from orders_table and to return a Pandas Dataframe.  <br>
-The clean_products_data method is used to remove NULL and incorrect values from products_data and to return a Pandas Dataframe. Also, the mthod deals with seperating the weights column into their respective size and unit which is then converted to kilograms for all the weights.  <br>
-The clean_dates_data method is used to remove NULL and incorrect values from dates_table and to return a Pandas Dataframe.  <br>
+Finally, in the [DataCleaning.py](DataCleaning.py), the clean_user_data method is used to remove NULL and incorrect values from users table and to return a Pandas Dataframe.  <br>
+The clean_card_data() method is used to remove NULL and incorrect values from card_details table and to return a Pandas Dataframe. <br>
+The clean_store_data() method is used to remove NULL and incorrect values from stores_data table and to return a Pandas Dataframe.  <br>
+The clean_orders_data() method is used to remove NULL and incorrect values from orders_table and to return a Pandas Dataframe.  <br>
+The clean_products_data() method is used to remove NULL and incorrect values from products_data and to return a Pandas Dataframe. Also, the mthod deals with seperating the weights column into their respective size and unit which is then converted to kilograms for all the weights.  <br>
+The clean_dates_data() method is used to remove NULL and incorrect values from dates_table and to return a Pandas Dataframe.  <br>
 
 ### Creating the Database Schema  <br>
 
@@ -82,9 +82,9 @@ Run the individual queries in the SQL server by turning the others into comments
 Run the individual queries in the SQL server by turning the others into comments whilst doing so; using Ctrl+/ to do so to return the required results for the tables in question. <br>
 
 ## File Structure
-DatabaseConnector.py <br>
-DataExtractor.py <br>
-DataCleaning.py <br>
-Database Schema.sql <br>
-Database Queries.sql <br>
-README.md
+[DatabaseConnector.py](DatabaseConnector.py) <br>
+[DataExtractor.py](DataExtractor.py) <br>
+[DataCleaning.py](DataCleaning.py) <br>
+[Database Schema.sql](Database Schema.sql) <br>
+[Database Queries.sql](Database Queries.sql) <br>
+[README.md](README.md)
