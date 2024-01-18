@@ -113,9 +113,9 @@ For example:
         country_code,
         COUNT(country_code)
       FROM 
-          dim_store_details
+        dim_store_details
       GROUP BY
-          country_code
+        country_code
 
 This code returns how many stores there are in which countries.
 
