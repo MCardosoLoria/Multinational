@@ -85,6 +85,6 @@ Run the individual queries in the SQL server by turning the others into comments
 [DatabaseConnector.py](DatabaseConnector.py) <br>
 [DataExtractor.py](DataExtractor.py) <br>
 [DataCleaning.py](DataCleaning.py) <br>
-[Database Schema.sql](Database Schema.sql) <br>
-[Database Queries.sql](Database Queries.sql) <br>
+Database Schema.sql <br>
+Database Queries.sql <br>
 [README.md](README.md)
