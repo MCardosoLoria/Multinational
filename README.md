@@ -5,6 +5,16 @@ Milestone 2 - Extracting and Cleaning Data from Data Sources <br>
 Milestone 3 - Creating the Database Schema <br>
 Milestone 4 - Querying the Data <br>
 
+## Project Dependencies
+In order to run this project, the following modules need to be installed:
+
+- re
+- pandas
+- tabula
+- json
+- boto3
+- requests
+
 ## Description of the Project
 Milestone 2 - Extracting and Cleaning Data from Data Sources  <br>
 
