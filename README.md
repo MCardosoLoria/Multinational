@@ -42,17 +42,52 @@ In order to run this project, the following modules need to be installed:
 
 Here, in the [DatabaseConnector.py](DatabaseConnector.py), the read_db_creds() method is used to load the credentials to be used when connecting to the engine that will provide the names of the tables. <br>
 The init_db_engine() method is used to input the database credentials into the engine and connect to it securely.  <br>
+
+      engine = create_engine(f"{db_creds['DATABASE_TYPE']}+{db_creds['DBAPI']}://{db_creds['RDS_USER']}:{db_creds['RDS_PASSWORD']}@{db_creds['RDS_HOST']}:{db_creds['RDS_PORT']}/{db_creds['RDS_DATABASE']}")
+
 The list_db_tables() method is used to gain acces to the names of the tables which will be extracted, cleaned and uploaded to PGAdmin4.  <br>
+
+      inspector.get_table_names()
+
 The upload_to_db() method is used to upload the selected table onto the database by providing the .csv file where the table was cleaned and written onto.  <br>
 
+      df.to_sql(name = "dim_store_details", con = engine, if_exists = 'replace', index = False)
+
 Next, in the [DataExtractor.py](DataExtractor.py), the read_rds_table() method is used to extract and return the dataframes for legacy_users and orders_table.  <br>
+
+      df = pd.read_sql_table(table_name, engine)
+
 The retrieve_pdf_data() method is used to extract and return the dataframes for card_details. <br>
+
+      df = tabula.read_pdf(table_name, pages = "all")
+  
 The list_number_of_stores() is used to extract and return the number of stores in the given link so that the next method can used that to compile and extract the correct number of stores data. <br>
+
+      response = requests.get(url, headers = headers)
+      number_of_stores = response.json()
+
 The retrieve_stores_data() is used to extract and return the dataframes for stores_data. <br>
+
+      while store_number < 451:
+            url = f"https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{store_number}"
+            response = requests.get(url, headers = headers)
+            data = response.text
+            df = json.loads(data)
+            stores_list.append(df)
+            store_number += 1
+
 The extract_from_s3_products() is used to extract and return the dataframes for products_list. <br>
+
+      products_list = s3.download_file("data-handling-public", "products.csv", r"Multinational Retail Data\sales_data\Multinational_products.csv")
+
 The extract_from_json_dates() is used to extract and return the dataframes for date_times. <br>
 
-Finally, in the [DataCleaning.py](DataCleaning.py), the clean_user_data method is used to remove NULL and incorrect values from users table and to return a Pandas Dataframe.  <br>
+      dates_list = s3.download_file("data-handling-public", "date_details.json", r"Multinational Retail Data\sales_data\Multination_date_events.json")
+
+Finally, in the [DataCleaning.py](DataCleaning.py), the clean_user_data() method is used to remove NULL and incorrect values from users table and to return a Pandas Dataframe.  <br>
+
+      df.to_csv(r"Multinational Retail Data\sales_data\Multination_legacy_users.csv")
+
 The clean_card_data() method is used to remove NULL and incorrect values from card_details table and to return a Pandas Dataframe. <br>
 The clean_store_data() method is used to remove NULL and incorrect values from stores_data table and to return a Pandas Dataframe.  <br>
 The clean_orders_data() method is used to remove NULL and incorrect values from orders_table and to return a Pandas Dataframe.  <br>
@@ -63,9 +98,26 @@ The clean_dates_data() method is used to remove NULL and incorrect values from d
 
 Here, in the Database Schema.sql, the queries convert data types to their correct data types for each table. For the products table, some of the queries remove the '£' sign from the price and adds a weight_class column and a weight_range column. Also, for the stores table, some of the queries corrects incorrect staff numbers to NULL since they were not clear for adaptation. <br>
 
+For example:
+
+      ALTER TABLE dim_users
+ALTER COLUMN user_uuid TYPE UUID USING ("user_uuid"::TEXT::UUID);
+
 ### Querying the Data <br>
 
 Here, in the Database Queries.sql, the queries return specific results required for the client. These are listed in the docstrings above each query within the file. <br>
+
+For example:
+
+      SELECT
+    country_code,
+    COUNT(country_code)
+FROM 
+    dim_store_details
+GROUP BY
+    country_code
+
+This code returns how many stores there are in which countries.
 
 ## Usage Instructions
 ### Extracting and Cleaning Data from Data Sources <br>
